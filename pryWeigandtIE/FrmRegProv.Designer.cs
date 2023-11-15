@@ -35,7 +35,6 @@
             this.cmdModificar = new System.Windows.Forms.Button();
             this.cmdAgregar = new System.Windows.Forms.Button();
             this.txtEntidad = new System.Windows.Forms.TextBox();
-            this.txtApertura = new System.Windows.Forms.TextBox();
             this.txtDireccion = new System.Windows.Forms.TextBox();
             this.txtNumExp = new System.Windows.Forms.TextBox();
             this.txtNum = new System.Windows.Forms.TextBox();
@@ -50,6 +49,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.cmbJurisd = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
+            this.dtpAperura = new System.Windows.Forms.DateTimePicker();
             ((System.ComponentModel.ISupportInitialize)(this.dgvProveedores)).BeginInit();
             this.SuspendLayout();
             // 
@@ -84,6 +84,7 @@
             this.cmdEliminar.TabIndex = 72;
             this.cmdEliminar.Text = "Eliminar";
             this.cmdEliminar.UseVisualStyleBackColor = false;
+            this.cmdEliminar.Click += new System.EventHandler(this.cmdEliminar_Click);
             // 
             // cmdModificar
             // 
@@ -115,14 +116,6 @@
             this.txtEntidad.Size = new System.Drawing.Size(183, 31);
             this.txtEntidad.TabIndex = 69;
             // 
-            // txtApertura
-            // 
-            this.txtApertura.BackColor = System.Drawing.Color.Silver;
-            this.txtApertura.Location = new System.Drawing.Point(261, 157);
-            this.txtApertura.Name = "txtApertura";
-            this.txtApertura.Size = new System.Drawing.Size(183, 31);
-            this.txtApertura.TabIndex = 68;
-            // 
             // txtDireccion
             // 
             this.txtDireccion.BackColor = System.Drawing.Color.Silver;
@@ -134,7 +127,7 @@
             // txtNumExp
             // 
             this.txtNumExp.BackColor = System.Drawing.Color.Silver;
-            this.txtNumExp.Location = new System.Drawing.Point(264, 200);
+            this.txtNumExp.Location = new System.Drawing.Point(264, 198);
             this.txtNumExp.Name = "txtNumExp";
             this.txtNumExp.Size = new System.Drawing.Size(178, 31);
             this.txtNumExp.TabIndex = 66;
@@ -247,6 +240,13 @@
             this.label8.TabIndex = 75;
             this.label8.Text = "JURISD";
             // 
+            // dtpAperura
+            // 
+            this.dtpAperura.Location = new System.Drawing.Point(261, 155);
+            this.dtpAperura.Name = "dtpAperura";
+            this.dtpAperura.Size = new System.Drawing.Size(183, 31);
+            this.dtpAperura.TabIndex = 77;
+            // 
             // FrmRegProv
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
@@ -254,6 +254,7 @@
             this.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
             this.CancelButton = this.cmdCancelar;
             this.ClientSize = new System.Drawing.Size(729, 993);
+            this.Controls.Add(this.dtpAperura);
             this.Controls.Add(this.cmbJurisd);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.dgvProveedores);
@@ -262,7 +263,6 @@
             this.Controls.Add(this.cmdModificar);
             this.Controls.Add(this.cmdAgregar);
             this.Controls.Add(this.txtEntidad);
-            this.Controls.Add(this.txtApertura);
             this.Controls.Add(this.txtDireccion);
             this.Controls.Add(this.txtNumExp);
             this.Controls.Add(this.txtNum);
@@ -295,7 +295,6 @@
         private Button cmdModificar;
         private Button cmdAgregar;
         private TextBox txtEntidad;
-        private TextBox txtApertura;
         private TextBox txtDireccion;
         private TextBox txtNumExp;
         private TextBox txtNum;
@@ -310,5 +309,6 @@
         private Label label1;
         private ComboBox cmbJurisd;
         private Label label8;
+        private DateTimePicker dtpAperura;
     }
 }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace pryWeigandtIE
 {
@@ -20,44 +21,63 @@ namespace pryWeigandtIE
             InitializeComponent();
         }
 
-       
 
+        int intentos = 0;
         private void btnIniciar_Click(object sender, EventArgs e)
         {
-            string usuario = txtUsuario.Text;
-            string contraseña = txtContraseña.Text;
-            DateTime fechaHoraActual = DateTime.Now;
+            //string usuario = txtUsuario.Text;
+            //string contraseña = txtContraseña.Text;
+            // DateTime fechaHoraActual = DateTime.Now;
 
-            // Comprobar las credenciales (aquí puedes agregar tu lógica de autenticación)
-            if (Autenticar(usuario, contraseña))
+            //Usuario objValidaUsuario = new Usuario();
+
+            // objValidaUsuario.ConectarBD();
+            //Realizar y Corregir lo de los parametros
+            // objValidaUsuario.RegistrarLog();
+
+            //label3.Text = objValidaUsuario.estadoConexion;
+
+            clsUsuario Usuario = new clsUsuario();
+
+            
+            if (Usuario.ValidarUsuario(txtUsuario.Text, txtContraseña.Text))
+           
             {
-                // Registro de inicio de sesión en el archivo LOG.txt
-                string registro = $"Usuario: {usuario}, Hora: {fechaHoraActual.ToString("HH:mm:ss")}, Fecha: {fechaHoraActual.ToShortDateString()}";
-                RegistrarLog(registro);
+                StreamWriter sw = new StreamWriter("logInicio", true);
+                sw.WriteLine(txtUsuario.Text + "- Fecha: " + DateTime.Now);
+                sw.Close();
 
-                // Abre la ventana principal o realiza cualquier acción que desees
-                MessageBox.Show("Inicio de sesión exitoso");
-                // Supongamos que esto ocurre después de una verificación exitosa de las credenciales.
-                UsuarioActual.NombreUsuario = txtUsuario.Text;
-                // Aquí puedes abrir la ventana principal de tu aplicación
-                FrmPrincipal forPrincipal = new FrmPrincipal();
-                forPrincipal.Show();
+                // Escribe el log en la BD
+                clsRegistrarLogs LogsR = new clsRegistrarLogs();
+                LogsR.RegistrarLog(txtUsuario.Text, DateTime.Now, "Prueba", "Inicio Sesión");
+
+               
+                FrmPrincipal principalForm = new FrmPrincipal();
+                principalForm.Show();
                 this.Hide();
             }
             else
             {
-                MessageBox.Show("Credenciales incorrectas");
+                MessageBox.Show("Datos de inicio de sesion incorrectos", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                intentos++;
+                MessageBox.Show(intentos + " de 3 intentos posibles", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtUsuario.Clear();
+                txtContraseña.Clear();
+
+
+                if (intentos >= 3)
+                {
+                    MessageBox.Show("Ha superado el limite de los intentos"  + " segundos", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtUsuario.Enabled = false;
+                    txtContraseña.Enabled = false;
+                    btnIniciar.Enabled = false;
+
+                    
+                }
             }
         }
 
-        private bool Autenticar(string usuario, string contraseña)
-        {
-            // Aquí debes implementar tu lógica de autenticación.
-            // Puedes comparar el usuario y la contraseña con una base de datos o valores almacenados.
-            // En este ejemplo, se permite el acceso si el usuario es "admin" y la contraseña es "password".
-
-            return usuario == "admin" && contraseña == "password";
-        }
+      
 
         private void RegistrarLog(string registro)
         {
@@ -80,6 +100,13 @@ namespace pryWeigandtIE
         private void frmLogin_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            frmRegistrarUsuario forRegistrarUsuario = new frmRegistrarUsuario();
+            forRegistrarUsuario.Show();
+            this.Hide();
         }
     }
 

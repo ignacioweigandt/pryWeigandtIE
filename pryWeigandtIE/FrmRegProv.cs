@@ -13,13 +13,14 @@ namespace pryWeigandtIE
 {
     public partial class FrmRegProv : Form
     {
+        private List<clsRegistro> registros = new List<clsRegistro>();
         // Ruta del archivo CSV
         string filePath = "listado de aseguradores.csv";
         public FrmRegProv()
         {
             InitializeComponent();
         }
-
+        
         private void FrmRegProv_Load(object sender, EventArgs e)
         {
             
@@ -77,101 +78,120 @@ namespace pryWeigandtIE
             }
 
 
-            //Traer Todos los proveedores Registrados
-            StreamReader lectorArchivo = new StreamReader("listado de aseguradores.csv");
-
-            bool eslaprimerafila = true; //Primera Fila
-
-            string leerElrenglon = "";
-            string[] separarDatos;
-
-            while (!lectorArchivo.EndOfStream)
-            {
-                leerElrenglon = lectorArchivo.ReadLine();
-                separarDatos = leerElrenglon.Split(';');
-                if(eslaprimerafila==true)
-                {
-                    //Crear las columnas de la grilla con los datos de la primer fila
-
-                    for(int indice = 0; indice < separarDatos.Length; indice++)
-                    {
-                        dgvProveedores.Columns.Add(separarDatos[indice], separarDatos[indice]);
-                    }
-                    eslaprimerafila = false;
-                }
-                else
-                {
-                   dgvProveedores.Rows.Add(separarDatos);
-                }
-            }
-            lectorArchivo.Close();
+           
         }
 
         private void cmdModificar_Click(object sender, EventArgs e)
         {
-            // Obtener los datos del formulario
-            string numero = txtNum.Text;
-            string entidad = txtEntidad.Text;
-            string apertura = txtApertura.Text;
-            string numeroExpediente = txtNumExp.Text;
-            string juzgado = cmbJuzg.Text;
-            string jurisdiccion = cmbJurisd.Text;
-            string direccion = txtDireccion.Text;
-            string liquidadorResponsable = cmbLiquidador.Text;
-
-            // Crear una lista para almacenar las líneas del archivo CSV
-            List<string> lines = new List<string>();
-
+            int Numero = int.Parse(txtNum.Text);
+            string Entidad = txtEntidad.Text;
+            string Expediente = txtNumExp.Text;
+            string Juzgado = cmbJuzg.Text;
+            string Jurisdiccion = cmbJurisd.Text;
+            string Direccion = txtDireccion.Text;
+            string Liquidador = cmbLiquidador.Text;
+            DateTime fechaApertura = dtpAperura.Value;
             try
             {
-                // Leer las líneas existentes del archivo CSV
-                using (StreamReader reader = new StreamReader(filePath))
+                // Crear una lista para almacenar las líneas del archivo CSV
+                List<string> lineas = new List<string>();
+                // Agregar la primera línea con encabezados de columnas
+                lineas.Add("Nº;Entidad;APERTURA;Nº EXPTE;JUZG.;JURISD;DIRECCION;LIQUIDADOR RESPONSABLE");
+                // Variable para verificar si es la primera línea del archivo
+                bool primerLinea = true;
+                // Abrir el archivo CSV para lectura
+                using (StreamReader lector = new StreamReader(filePath))
                 {
-                    string line;
-                    while ((line = reader.ReadLine()) != null)
+                    string readLine;
+
+                    // Leer el archivo línea por línea
+                    while ((readLine = lector.ReadLine()) != null)
                     {
-                        lines.Add(line);
+                        // Dividir la línea en elementos usando ';' como separador
+                        string[] separador = readLine.Split(';');
+
+                        // Verificar si hay al menos un elemento y si el primer elemento es un número válido
+                        if (separador.Length > 0 && int.TryParse(separador[0], out int existingID))
+                        {
+                            // Comprobar si el número coincide con el valor de la variable "Numero"
+                            if (existingID == Numero)
+                            {
+                                // Crear una nueva línea con los datos modificados
+                                string nuevaLinea = $"{Numero};{Entidad};{fechaApertura};{Expediente};{Juzgado};{Jurisdiccion};{Direccion};{Liquidador}";
+
+                                // Agregar la nueva línea a la lista
+                                lineas.Add(nuevaLinea);
+                            }
+                            else
+                            {
+                                // Si el número no coincide, agregar la línea original sin modificaciones
+                                lineas.Add(readLine);
+                            }
+                        }
                     }
                 }
-
-                // Buscar la línea que se va a modificar (por ejemplo, usando el número de expediente)
-                for (int i = 0; i < lines.Count; i++)
+                // Escribir las líneas en el archivo original (sobreescribiendo el archivo)
+                using (StreamWriter sw = new StreamWriter(filePath, false))
                 {
-                    string[] parts = lines[i].Split(',');
-                    if (parts.Length >= 8 && parts[3] == numeroExpediente)
+                    foreach (string linea in lineas)
                     {
-                        // Modificar los campos específicos
-                        parts[0] = numero;
-                        parts[1] = entidad;
-                        parts[2] = apertura;
-                        parts[6] = juzgado;
-                        parts[7] = jurisdiccion;
-                        parts[8] = liquidadorResponsable;
-
-                        // Actualizar la línea en la lista
-                        lines[i] = string.Join(",", parts);
-                        break;
+                        // Agregar la primera línea con los títulos de las columnas
+                        if (primerLinea)
+                        {
+                            sw.WriteLine(linea);
+                            primerLinea = false;
+                        }
+                        else
+                        {
+                            sw.WriteLine(linea);
+                        }
                     }
                 }
-
-                // Escribir las líneas actualizadas de nuevo en el archivo CSV
-                using (StreamWriter writer = new StreamWriter(filePath))
-                {
-                    foreach (string line in lines)
-                    {
-                        writer.WriteLine(line);
-                    }
-                }
-
-                MessageBox.Show("Archivo CSV modificado correctamente.");
+                // Mostrar un mensaje de éxito
+                MessageBox.Show("Datos del Proveedor Nº " + Numero + " modificados correctamente.", "Modificación de datos", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // Limpiar y recargar los datos en la grilla de proveedores
+                dgvProveedores.Rows.Clear();
+                dgvProveedores.Columns.Clear();
+                CargarTodo();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al modificar el archivo CSV: " + ex.Message);
+                // En caso de error, mostrar un mensaje de error
+                MessageBox.Show("Error al modificar el archivo: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        
+        private void CargarTodo()
+        {
+            using (StreamReader sr = new StreamReader(filePath))
+            {
+                string readLine = sr.ReadLine();
+                if (readLine != null)
+                {
+                    string[] separador = readLine.Split(';');
+                    foreach (string columna in separador)
+                    {
+                        dgvProveedores.Columns.Add(columna, columna);
+                    }
+                    //La HashSet<string> clase proporciona operaciones de conjuntos de alto rendimiento.
+                    HashSet<string> jurisdiccionesUnicas = new HashSet<string>();
+                    HashSet<string> juzgadoUnico = new HashSet<string>();
+                    HashSet<string> responsablesUnicos = new HashSet<string>();
+
+                    while (!sr.EndOfStream)
+                    {
+                        readLine = sr.ReadLine();
+                        separador = readLine.Split(';');
+                        dgvProveedores.Rows.Add(separador);
+                        juzgadoUnico.Add(separador[4]);
+                        jurisdiccionesUnicas.Add(separador[5]);
+                        responsablesUnicos.Add(separador[7]);
+                    }
+                }
+            }
+        }
+
+
 
         private void cmdAgregar_Click(object sender, EventArgs e)
         {
@@ -180,7 +200,7 @@ namespace pryWeigandtIE
                 // Obtener los valores ingresados por el usuario
                 string numero = txtNum.Text;
                 string entidad = txtEntidad.Text;
-                string apertura = txtApertura.Text;
+                DateTime apertura = dtpAperura.Value;
                 string numExpte = txtNumExp.Text;
                 string juzgado = cmbJuzg.SelectedItem.ToString();
                 string jurisdiccion = cmbJurisd.SelectedItem.ToString();
@@ -199,7 +219,7 @@ namespace pryWeigandtIE
                 // Limpiar los campos después de agregar los datos
                 txtNum.Clear();
                 txtEntidad.Clear();
-                txtApertura.Clear();
+                dtpAperura.Value = DateTime.Now;
                 txtNumExp.Clear();
                 txtDireccion.Clear();
 
@@ -222,19 +242,116 @@ namespace pryWeigandtIE
 
         private void dgvProveedores_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+            txtNum.Text = dgvProveedores.CurrentRow.Cells[0].Value.ToString();
+            txtEntidad.Text = dgvProveedores.CurrentRow.Cells[1].Value.ToString();
+            dtpAperura.Text = dgvProveedores.CurrentRow.Cells[2].Value.ToString();
+            txtNumExp.Text = dgvProveedores.CurrentRow.Cells[3].Value.ToString();
+            cmbJuzg.SelectedItem = dgvProveedores.CurrentRow.Cells[4].Value.ToString();
+            cmbJurisd.SelectedItem = dgvProveedores.CurrentRow.Cells[5].Value.ToString();
+            txtDireccion.Text = dgvProveedores.CurrentRow.Cells[6].Value.ToString();
+            cmbLiquidador.Text = dgvProveedores.CurrentRow.Cells[7].Value.ToString();
 
-            if (e.RowIndex >= 0)
+        }
+
+        private void cmdEliminar_Click(object sender, EventArgs e)
+        {
+            if (dgvProveedores.SelectedRows.Count > 0)
             {
-                DataGridViewRow row = dgvProveedores.Rows[e.RowIndex];
-                txtNum.Text = row.Cells["Nº"].Value.ToString();
-                txtEntidad.Text = row.Cells["Entidad"].Value.ToString();
-                txtApertura.Text = row.Cells["APERTURA"].Value.ToString();
-                txtNumExp.Text = row.Cells["Nº EXPTE."].Value.ToString();
-                cmbJuzg.SelectedItem = row.Cells["JUZG."].Value.ToString();
-                cmbJurisd.SelectedItem = row.Cells["JURISD"].Value.ToString();
-                txtDireccion.Text = row.Cells["DIRECCION"].Value.ToString();
-                cmbLiquidador.SelectedItem = row.Cells["LIQUIDADOR RESPONSABLE"].Value.ToString();
+                int numeroRegistroAEliminar = dgvProveedores.SelectedRows[0].Index + 2; // Obtén el número de fila seleccionada
+                //Especifica identificadores que indican el valor devuelto
+                DialogResult resultado = MessageBox.Show("¿Seguro que deseas eliminar esta fila?", "Confirmar eliminación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (resultado == DialogResult.Yes)
+                {
+                    // Elimina la fila del DataGridView
+                    dgvProveedores.Rows.RemoveAt(dgvProveedores.SelectedRows[0].Index);
+
+                    // Elimina la fila del archivo CSV
+                    EliminarRegistroCSV(filePath, numeroRegistroAEliminar);
+                    ActualizarArchivoCSV();
+                    CargarDatosEnGrilla();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Por favor, selecciona una fila para eliminar.", "Sin selección", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
+
+        static void EliminarRegistroCSV(string filePath, int numeroRegistroAEliminar)
+        {
+            try
+            {
+                // Lee todo el contenido del archivo CSV
+                string[] lineas = File.ReadAllLines(filePath);
+
+                // Verifica que el número de registro a eliminar sea válido
+                if (numeroRegistroAEliminar >= 1 && numeroRegistroAEliminar <= lineas.Length)
+                {
+                    // Crea un nuevo contenido sin el registro a eliminar
+                    //String builder representa a una serie de caracteres mutables que se pueden ampliar para almacenar mas caracteres si es necesario
+                    StringBuilder nuevoContenido = new StringBuilder();
+                    for (int i = 0; i < lineas.Length; i++)
+                    {
+                        if (i + 1 != numeroRegistroAEliminar) // Omitir el registro que deseas eliminar
+                        {
+                            nuevoContenido.AppendLine(lineas[i]);
+                        }
+                    }
+
+                    // Escribe el nuevo contenido en el archivo CSV
+                    File.WriteAllText(filePath, nuevoContenido.ToString());
+
+                    MessageBox.Show("Registro eliminado con éxito.");
+                }
+                else
+                {
+                    MessageBox.Show("Número de registro a eliminar no válido.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al eliminar el registro: " + ex.Message);
+            }
+        }
+
+        private void ActualizarArchivoCSV()
+        {
+            try
+            {
+                // Abrir o crear el archivo CSV en modo escritura.
+                using (StreamWriter sw = new StreamWriter(filePath, true))
+                {
+                    // Iterar a través de la lista de personas y escribir sus datos en el archivo CSV.
+                    foreach (var reg in registros)
+                    {
+                        // Escribir los datos en formato CSV (separados por comas).
+                        sw.WriteLine($"{reg.Numero};{reg.Entidad};{reg.Apertura};{reg.Expediente};{reg.Juzgado};{reg.Jurisdiccion};{reg.Direccion};{reg.LiquidadorResponsable}");
+                    }
+                }
+                dgvProveedores.Refresh();
+
+            }
+            catch (Exception ex)
+            {
+                // Mostrar un mensaje de error en caso de que ocurra una excepción.
+                MessageBox.Show("Error al escribir en el archivo CSV: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
+        private void CargarDatosEnGrilla()
+        {
+            foreach (var reg in registros)
+            {
+                dgvProveedores.Rows.Add(new object[] { reg.Numero, reg.Entidad, reg.Apertura, reg.Expediente, reg.Juzgado, reg.Jurisdiccion, reg.Direccion, reg.LiquidadorResponsable });
+            }
+            registros.Clear();
+        }
+
+      
+
     }
+
+
 }
