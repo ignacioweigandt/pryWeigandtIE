@@ -234,10 +234,7 @@ namespace pryWeigandtIE
 
         private void cmdCancelar_Click(object sender, EventArgs e)
         {
-            // Aquí puedes abrir la ventana principal de tu aplicación
-            FrmPrincipal forPrincipal = new FrmPrincipal();
-            forPrincipal.Show();
-            this.Hide();
+            this.Close();
         }
 
         private void dgvProveedores_CellContentClick(object sender, DataGridViewCellEventArgs e)

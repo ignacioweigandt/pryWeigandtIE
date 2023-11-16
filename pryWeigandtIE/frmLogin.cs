@@ -51,8 +51,9 @@ namespace pryWeigandtIE
                 clsRegistrarLogs LogsR = new clsRegistrarLogs();
                 LogsR.RegistrarLog(txtUsuario.Text, DateTime.Now, "Prueba", "Inicio Sesión");
 
-               
-                FrmPrincipal principalForm = new FrmPrincipal();
+                clsUsuario usuario = new clsUsuario();
+                usuario.Nombre = txtUsuario.Text;
+                FrmPrincipal principalForm = new FrmPrincipal(usuario);
                 principalForm.Show();
                 this.Hide();
             }

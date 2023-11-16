@@ -34,7 +34,7 @@
             this.acercaDeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pantallasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.proveedoresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.accesoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.AccesoProveedores = new System.Windows.Forms.ToolStripMenuItem();
             this.registroProveedoresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -82,18 +82,18 @@
             // proveedoresToolStripMenuItem
             // 
             this.proveedoresToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.accesoToolStripMenuItem});
+            this.AccesoProveedores});
             this.proveedoresToolStripMenuItem.Name = "proveedoresToolStripMenuItem";
             this.proveedoresToolStripMenuItem.Size = new System.Drawing.Size(283, 34);
             this.proveedoresToolStripMenuItem.Text = "Proveedores";
             this.proveedoresToolStripMenuItem.Click += new System.EventHandler(this.proveedoresToolStripMenuItem_Click);
             // 
-            // accesoToolStripMenuItem
+            // AccesoProveedores
             // 
-            this.accesoToolStripMenuItem.Name = "accesoToolStripMenuItem";
-            this.accesoToolStripMenuItem.Size = new System.Drawing.Size(170, 34);
-            this.accesoToolStripMenuItem.Text = "Acceso";
-            this.accesoToolStripMenuItem.Click += new System.EventHandler(this.accesoToolStripMenuItem_Click);
+            this.AccesoProveedores.Name = "AccesoProveedores";
+            this.AccesoProveedores.Size = new System.Drawing.Size(270, 34);
+            this.AccesoProveedores.Text = "Acceso";
+            this.AccesoProveedores.Click += new System.EventHandler(this.accesoToolStripMenuItem_Click);
             // 
             // registroProveedoresToolStripMenuItem
             // 
@@ -162,7 +162,7 @@
         private ToolStripMenuItem pantallasToolStripMenuItem;
         private ToolStripMenuItem proveedoresToolStripMenuItem;
         private ToolStripMenuItem registroProveedoresToolStripMenuItem;
-        private ToolStripMenuItem accesoToolStripMenuItem;
+        private ToolStripMenuItem AccesoProveedores;
         private StatusStrip statusStrip1;
         private ToolStripStatusLabel toolStripStatusLabel1;
         private ToolStripStatusLabel toolStripStatusLabel2;

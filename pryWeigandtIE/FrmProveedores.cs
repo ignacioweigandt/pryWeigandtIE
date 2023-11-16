@@ -86,10 +86,7 @@ namespace pryWeigandtIE
 
         private void btnCancelar_Click(object sender, EventArgs e)
         {
-            // Aquí puedes abrir la ventana principal de tu aplicación
-            FrmPrincipal forPrincipal = new FrmPrincipal();
-            forPrincipal.Show();
-            this.Hide();
+           this.Close();
         }
     }
 }
